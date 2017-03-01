@@ -31,6 +31,7 @@ body {
 
 <script>
 var isPrefetch = window.location.search.indexOf('prefetch=1') > 0;
+
 function prefetch(callback) {
     var prefetchVp = new YAHOO.VideoPlatform.VideoPlayer({
         playlist: {
@@ -43,14 +44,17 @@ function prefetch(callback) {
         region: 'US',
         autoplay: false
     });
+
     prefetchVp.render('#prefetch-player');
     setTimeout(function() {
         callback(prefetchVp.getMediaStore());
     }, 3000);
 }
+
 function initPlayer(mediaStore) {
     window._perf = { prefetching: isPrefetch };
     window._perfInitPlayer = Date.now();
+
     var vp = new YAHOO.VideoPlatform.VideoPlayer({
         playlist: {
             mediaItems: [
@@ -60,8 +64,13 @@ function initPlayer(mediaStore) {
             ]
         },
         region: 'US',
-        autoplay: true
+        autoplay: true,
+        connectionType: {
+            raw: 'dsl',
+            mobile: false
+        }
     }, mediaStore);
+
     vp.on(YAHOO.VideoPlatform.API_Events.PLAYER_RENDERED, function() {
         window._perf['init player => player rendered'] = Date.now() - window._perfInitPlayer;
         window._perfPlayerRendered = Date.now();
@@ -69,6 +78,7 @@ function initPlayer(mediaStore) {
     vp._eventBus.subscribe('media-item-loaded', function() {
         window._perf['init player => media item loaded'] = Date.now() - window._perfInitPlayer;
         window._perfMediaItemLoaded = Date.now();
+
         var videoNode = vp.getVideoElement();
         videoNode.addEventListener('loadstart', function() {
             window._perf['media item loaded => video-loadstart'] = Date.now() - window._perfMediaItemLoaded;
@@ -84,8 +94,10 @@ function initPlayer(mediaStore) {
         window._perf['init player => playback start'] = Date.now() - window._perfInitPlayer;
         document.getElementById('info').innerHTML = JSON.stringify(window._perf, '', 1);
     });
+
     vp.render('#player');
 }
+
 if (isPrefetch) {
     prefetch(function(mediaStore) {
         initPlayer(mediaStore);

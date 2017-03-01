@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='UTF-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no' />
+
+<style>
+html, body {
+    height: 100%;
+}
+body {
+    margin: 0;
+}
+#player {
+    height: 50%;
+}
+#prefetch-player {
+    display: none;
+}
+#info {
+    font-size: 10px;
+}
+</style>
+
+        <script src='https://yep.video.yahoo.com/js/3/videoplayer-min.js?r=nextgen&ypv=prod'></script>
+    </head>
+    <body>
+        <div id='prefetch-player'></div>
+        <div id='player'></div>
+        <pre id='info'></pre>
+
+<script>
+var isPrefetch = window.location.search.indexOf('prefetch=1') > 0;
+function prefetch(callback) {
+    var prefetchVp = new YAHOO.VideoPlatform.VideoPlayer({
+        playlist: {
+            mediaItems: [
+                {
+                    id: '1a2aa009-29d3-3715-a67e-f583aea76371'
+                }
+            ]
+        },
+        region: 'US',
+        autoplay: false
+    });
+    prefetchVp.render('#prefetch-player');
+    setTimeout(function() {
+        callback(prefetchVp.getMediaStore());
+    }, 3000);
+}
+function initPlayer(mediaStore) {
+    window._perf = { prefetching: isPrefetch };
+    window._perfInitPlayer = Date.now();
+    var vp = new YAHOO.VideoPlatform.VideoPlayer({
+        playlist: {
+            mediaItems: [
+                {
+                    id: '1a2aa009-29d3-3715-a67e-f583aea76371'
+                }
+            ]
+        },
+        region: 'US',
+        autoplay: true
+    }, mediaStore);
+    vp.on(YAHOO.VideoPlatform.API_Events.PLAYER_RENDERED, function() {
+        window._perf['init player => player rendered'] = Date.now() - window._perfInitPlayer;
+        window._perfPlayerRendered = Date.now();
+    });
+    vp._eventBus.subscribe('media-item-loaded', function() {
+        window._perf['init player => media item loaded'] = Date.now() - window._perfInitPlayer;
+        window._perfMediaItemLoaded = Date.now();
+        var videoNode = vp.getVideoElement();
+        videoNode.addEventListener('loadstart', function() {
+            window._perf['media item loaded => video-loadstart'] = Date.now() - window._perfMediaItemLoaded;
+            window._perfVideoLoadStart = Date.now();
+        });
+        videoNode.addEventListener('canplaythrough', function() {
+            window._perf['video-loadstart => video-canplaythrough'] = Date.now() - window._perfVideoLoadStart;
+            window._perfVideoCanPlayThrough = Date.now();
+        });
+    });
+    vp.on(YAHOO.VideoPlatform.API_Events.PLAYBACK_START, function() {
+        window._perf['media item loaded => playback start'] = Date.now() - window._perfMediaItemLoaded;
+        window._perf['init player => playback start'] = Date.now() - window._perfInitPlayer;
+        document.getElementById('info').innerHTML = JSON.stringify(window._perf, '', 1);
+    });
+    vp.render('#player');
+}
+if (isPrefetch) {
+    prefetch(function(mediaStore) {
+        initPlayer(mediaStore);
+    });
+} else {
+    initPlayer();
+}
+</script>
+
+    </body>
+</html>

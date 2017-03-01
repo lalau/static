@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='UTF-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no' />
+
+<style>
+html, body {
+    height: 100%;
+}
+body {
+    margin: 0;
+}
+#player {
+    height: 50%;
+}
+#prefetch-player {
+    display: none;
+}
+</style>
+
+        <script src='https://yep.video.yahoo.com/js/3/videoplayer-min.js?r=nextgen&ypv=prod'></script>
+    </head>
+    <body>
+        <div id='prefetch-player'></div>
+        <div id='player'></div>
+
+<script>
+var isPrefetch = window.location.search.indexOf('prefetch=1') > 0;
+function prefetch(callback) {
+    var prefetchVp = new YAHOO.VideoPlatform.VideoPlayer({
+        playlist: {
+            mediaItems: [
+                {
+                    id: '1a2aa009-29d3-3715-a67e-f583aea76371'
+                }
+            ]
+        },
+        region: 'US',
+        autoplay: false
+    });
+    prefetchVp.render('#prefetch-player');
+    setTimeout(function() {
+        callback(prefetchVp.getMediaStore());
+    }, 3000);
+}
+function initPlayer(mediaStore) {
+    var vp = new YAHOO.VideoPlatform.VideoPlayer({
+        playlist: {
+            mediaItems: [
+                {
+                    id: '1a2aa009-29d3-3715-a67e-f583aea76371'
+                }
+            ]
+        },
+        region: 'US',
+        autoplay: true,
+        connectionType: {
+            raw: 'dsl',
+            mobile: false
+        }
+    }, mediaStore);
+    vp.render('#player');
+}
+if (isPrefetch) {
+    prefetch(function(mediaStore) {
+        initPlayer(mediaStore);
+    });
+} else {
+    initPlayer();
+}
+</script>
+
+    </body>
+</html>

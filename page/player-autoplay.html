@@ -41,7 +41,11 @@ function prefetch(callback) {
             ]
         },
         region: 'US',
-        autoplay: false
+        autoplay: false,
+        connectionType: {
+            raw: 'dsl',
+            mobile: false
+        }
     });
     prefetchVp.render('#prefetch-player');
     setTimeout(function() {

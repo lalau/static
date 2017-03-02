@@ -17,6 +17,9 @@ body {
 #prefetch-player {
     display: none;
 }
+#info {
+    font-size: 10px;
+}
 </style>
 
         <script src='https://yep.video.yahoo.com/js/3/videoplayer-min.js?r=nextgen&ypv=prod'></script>
@@ -24,6 +27,7 @@ body {
     <body>
         <div id='prefetch-player'></div>
         <div id='player'></div>
+        <pre id='info'></pre>
 
 <script>
 var isPrefetch = window.location.search.indexOf('prefetch=1') > 0;
@@ -61,6 +65,7 @@ function initPlayer(mediaStore) {
         }
     }, mediaStore);
     vp.render('#player');
+    document.getElementById('info').innerHTML = '"YAHOO.VideoPlatform.navigatorInfo.network" =>\n' + JSON.stringify(YAHOO.VideoPlatform.navigatorInfo.network, null, 2);
 }
 if (isPrefetch) {
     prefetch(function(mediaStore) {

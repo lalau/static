@@ -41,13 +41,15 @@ function initPlayer(selector, autoplay, connectionType) {
         connectionType: connectionType
     });
     vp.render(selector);
+    return vp;
 }
-initPlayer('#player1', false);
-initPlayer('#player2', true, {
-    raw: 'dsl',
-    mobile: false
+initPlayer('#player1', false).on(YAHOO.VideoPlatform.API_Events.PLAYER_READY, function() {
+    initPlayer('#player2', true, {
+        raw: 'dsl',
+        mobile: false
+    });
+    document.getElementById('info').innerHTML = '"YAHOO.VideoPlatform.navigatorInfo.network" =>\n' + JSON.stringify(YAHOO.VideoPlatform.navigatorInfo.network, null, 2);
 });
-document.getElementById('info').innerHTML = '"YAHOO.VideoPlatform.navigatorInfo.network" =>\n' + JSON.stringify(YAHOO.VideoPlatform.navigatorInfo.network, null, 2);
 </script>
 
     </body>

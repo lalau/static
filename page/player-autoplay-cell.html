@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='UTF-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no' />
+
+<style>
+html, body {
+    height: 100%;
+}
+body {
+    margin: 0;
+}
+#player1, #player2 {
+    height: 30%;
+}
+#info {
+    font-size: 10px;
+}
+</style>
+
+        <script src='https://yep.video.yahoo.com/js/3/videoplayer-min.js?r=nextgen&ypv=prod'></script>
+    </head>
+    <body>
+        <div id='player1'></div>
+        <pre id='info'></pre>
+
+<script>
+function initPlayer(selector, autoplay) {
+    var vp = new YAHOO.VideoPlatform.VideoPlayer({
+        playlist: {
+            mediaItems: [
+                {
+                    id: '1a2aa009-29d3-3715-a67e-f583aea76371'
+                }
+            ]
+        },
+        region: 'US',
+        autoplay: autoplay
+    });
+    vp.render(selector);
+    return vp;
+}
+initPlayer('#player1', true).on(YAHOO.VideoPlatform.API_Events.PLAYER_READY, function() {
+    document.getElementById('info').innerHTML = '"YAHOO.VideoPlatform.navigatorInfo.network" =>\n' + JSON.stringify(YAHOO.VideoPlatform.navigatorInfo.network, null, 2);
+});
+</script>
+
+    </body>
+</html>
